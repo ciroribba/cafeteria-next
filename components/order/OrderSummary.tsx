@@ -10,13 +10,17 @@ import { toast } from "react-toastify"
 export default function OrderSummary() {
 
   const order = useStore(state => state.order)
+  const clearOrder = useStore(state => state.clearOrder)
   const total = useMemo(() => order.reduce((total, item) => total + (item.price * item.quantity), 0), [order])
 
   const handleCreateOrder = async (formData : FormData) => {
     const data = {
-      name: formData.get('name')
+      name: formData.get('name'), 
+      total, 
+      order
     }
     const result = OrderSchema.safeParse(data)
+
     if(!result.success) {
       result.error.issues.forEach((issue) => {
         toast.error(issue.message)
@@ -31,6 +35,9 @@ export default function OrderSummary() {
       })
       return
     }
+
+    toast.success('Pedido creado correctamente')
+    clearOrder()
   }
   
   return (
